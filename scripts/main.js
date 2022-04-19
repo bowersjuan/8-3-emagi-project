@@ -3,17 +3,22 @@
 // Set up API Call Components
 const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
 
+// Set up Global Variables
+
 fetch(BASE_URL)
   .then((response) => response.json())
-  .then((response) => console.log(response))
+  .then((response) => {
+    console.log(response);
+    fillCategoriesDropdownMenu(response);
+  })
   .catch((e) => console.log(e));
 
 // Helper Functions
+
 /**
  * Enconder Function takes in a string of characters and converts them to corresponding emoji icons by referring to the letter property of each emoji object in the response array
  * @param {array} response
  * @param {string} str
- * @returns converted string that replaces letters with their corresponding emoji icons
  */
 function convertLettersToEmoji(response, str) {
   let res = str.split("");
@@ -41,7 +46,6 @@ function convertLettersToEmoji(response, str) {
  * Searcher Function takes in a string and searches through the response array for any elements that have a name property that includes the inputted string. It then outputs the emoji icons for each matching emoji object
  * @param {array} response
  * @param {string} str
- * @returns String of emojis that have the str string included in their names
  */
 function emojiSearcher(response, str) {
   let formattedStr = str.toLowerCase();
@@ -61,7 +65,45 @@ function emojiSearcher(response, str) {
   placeholderSearchText.innerText = `${res}`;
 }
 
+/**
+ * Fill Categories Dropdown Function takes all the possible catgeries of emojis and appends them in a dropdown menu at the start of the page launch
+ * @param {array} response
+ */
+function fillCategoriesDropdownMenu(response) {
+  let emojiCategories = [];
+  response.forEach((element) => {
+    emojiCategories = emojiCategories.concat(element.categories);
+  });
+
+  let uniqueCategories = [...new Set(emojiCategories)];
+
+  const categoriesDropdown = document.getElementById("category");
+
+  uniqueCategories.forEach((category) => {
+    const categoryElement = document.createElement("option");
+    categoryElement.innerText = category;
+    categoriesDropdown.append(categoryElement);
+  });
+}
+
+function randomizeEmojiFromCategory(response, category) {
+  let res = [];
+
+  response.forEach((element) => {
+    if (element.categories.includes(category)) {
+      res.push(element.symbol);
+    }
+  });
+
+  let randomIndex = Math.floor(Math.random() * res.length);
+
+  const placeholderRandomizerText =
+    document.querySelectorAll("article aside p")[2];
+  placeholderRandomizerText.innerText = `${res[randomIndex]}`;
+}
+
 // Click Events
+
 // Click Event for Encoder
 const encoderForm = document.querySelectorAll("form")[0];
 encoderForm.addEventListener("submit", (event) => {
@@ -103,5 +145,25 @@ searcherForm.addEventListener("submit", (event) => {
     .catch((e) => console.log(e));
 
   event.target.search.value = "";
-  // Resets search text input field to blank after submission
+});
+
+// Click Event for Randomizer
+const randomizerForm = document.querySelectorAll("form")[2];
+randomizerForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
+
+  const category = event.target.category.value;
+  if (category === "-- Choose a Category --") {
+    alert("Category must be selected");
+    return;
+  }
+
+  fetch(BASE_URL)
+    .then((response) => response.json())
+    .then((response) => {
+      randomizeEmojiFromCategory(response, category);
+    })
+    .catch((e) => console.log(e));
 });
