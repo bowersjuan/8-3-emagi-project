@@ -81,11 +81,16 @@ function fillCategoriesDropdownMenu(response) {
 
   uniqueCategories.forEach((category) => {
     const categoryElement = document.createElement("option");
-    categoryElement.innerText = category;
+    categoryElement.innerText = category[0].toUpperCase() + category.slice(1);
     categoriesDropdown.append(categoryElement);
   });
 }
 
+/**
+ * Randomizer function allows the user to choose a category of emoji from a dropdown menu and then get a random emoji symbol from the response object that corresponds to the selected category
+ * @param {*} response
+ * @param {*} category
+ */
 function randomizeEmojiFromCategory(response, category) {
   let res = [];
 
@@ -166,4 +171,6 @@ randomizerForm.addEventListener("submit", (event) => {
       randomizeEmojiFromCategory(response, category);
     })
     .catch((e) => console.log(e));
+
+  event.target.category.value = "-- Choose a Category --";
 });
