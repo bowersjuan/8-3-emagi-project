@@ -34,11 +34,8 @@ function convertLettersStrToEmojiStr(response, str) {
 
   res = res.join("");
 
-  const emojiConverterResult = document.querySelectorAll("h3")[0];
-  emojiConverterResult.innerText = `${res}`;
-
   const placeholderText = document.querySelector("article aside p");
-  placeholderText.remove();
+  placeholderText.innerText = `${res}`;
 }
 
 // Click Events
