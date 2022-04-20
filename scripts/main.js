@@ -125,6 +125,15 @@ function randomizeEmojiFromCategory(response, category) {
   const placeholderRandomizerText =
     document.querySelectorAll("article aside p")[2];
   placeholderRandomizerText.innerText = `${res[randomIndex]}`;
+  const resultElement = document.querySelectorAll("main article aside")[2];
+  resultElement.classList.add("success");
+  resultElement.classList.remove("error");
+
+  if (category === "-- Choose a Category --") {
+    resultElement.classList.toggle("error");
+    placeholderRandomizerText.innerText =
+      "A Category must be chosen from the menu";
+  }
 }
 
 function replaceTextWithEmoji(response, str) {
@@ -193,10 +202,6 @@ randomizerForm.addEventListener("submit", (event) => {
   const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
 
   const category = event.target.category.value;
-  if (category === "-- Choose a Category --") {
-    alert("Category must be selected");
-    return;
-  }
 
   fetch(BASE_URL)
     .then((response) => response.json())
