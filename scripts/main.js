@@ -40,6 +40,14 @@ function convertLettersToEmoji(response, str) {
   const placeholderConvertText =
     document.querySelectorAll("article aside p")[0];
   placeholderConvertText.innerText = `${res}`;
+  const resultElement = document.querySelectorAll("main article aside")[0];
+  resultElement.classList.add("success");
+  resultElement.classList.remove("error");
+
+  if (!str) {
+    resultElement.classList.toggle("error");
+    placeholderConvertText.innerText = "Text field cannot be empty";
+  }
 }
 
 /**
