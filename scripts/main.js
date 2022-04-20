@@ -12,6 +12,10 @@ fetch(BASE_URL)
 
 // Helper Functions
 
+/**
+ * Displays error message on console
+ * @param {*} error
+ */
 function displayError(error) {
   console.log(error);
 }
@@ -138,19 +142,34 @@ function randomizeEmojiFromCategory(response, category) {
 
 function replaceTextWithEmoji(response, str) {
   let arrayWithEmojis = [];
-  let formattedStrArray = str.toLowerCase().split(" ");
+  let formattedStrArray = str.split(" ");
+  console.log(formattedStrArray);
 
-  for (let element of response) {
-    let res = "";
-    formattedStrArray.forEach((word) => {
-      res = word;
-      if (word.includes(element.name)) {
-        res = element.symbol;
-        arrayWithEmojis.push(res);
-      }
+  formattedStrArray.forEach((word) => {
+    let matchingEmojiObj = response.find((element) => {
+      return word.toLowerCase().includes(element.name);
     });
+
+    if (matchingEmojiObj) {
+      let emoji = matchingEmojiObj.symbol;
+      let matchingName = matchingEmojiObj.name;
+      arrayWithEmojis.push(word.replaceAll(matchingName, emoji));
+    } else {
+      arrayWithEmojis.push(word);
+    }
+  });
+
+  const placeholderTextToEmoji =
+    document.querySelectorAll("article aside p")[3];
+  placeholderTextToEmoji.innerText = `${arrayWithEmojis.join(" ")}`;
+  const resultElement = document.querySelectorAll("main article aside")[3];
+  resultElement.classList.add("success");
+  resultElement.classList.remove("error");
+
+  if (str === "") {
+    resultElement.classList.toggle("error");
+    placeholderTextToEmoji.innerText = "Text field cannot be empty";
   }
-  console.log(arrayWithEmojis);
 }
 
 // Click Events
@@ -221,10 +240,6 @@ replacerForm.addEventListener("submit", (event) => {
   const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
 
   const textStr = event.target.replace.value;
-  if (textStr === "") {
-    alert("Text must be entered");
-    return;
-  }
 
   fetch(BASE_URL)
     .then((response) => response.json())
