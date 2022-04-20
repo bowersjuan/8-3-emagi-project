@@ -7,13 +7,14 @@ const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
 
 fetch(BASE_URL)
   .then((response) => response.json())
-  .then((response) => {
-    console.log(response);
-    fillCategoriesDropdownMenu(response);
-  })
-  .catch((e) => console.log(e));
+  .then(fillCategoriesDropdownMenu)
+  .catch(displayError);
 
 // Helper Functions
+
+function displayError(error) {
+  console.log(error);
+}
 
 /**
  * Enconder Function takes in a string of characters and converts them to corresponding emoji icons by referring to the letter property of each emoji object in the response array
