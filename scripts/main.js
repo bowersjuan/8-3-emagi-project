@@ -65,12 +65,19 @@ function emojiSearcher(response, str) {
     }
   });
 
-  if (!res) {
-    res = `Emoji with name "${str}" could not be found`;
-  }
-
   const placeholderSearchText = document.querySelectorAll("article aside p")[1];
   placeholderSearchText.innerText = `${res}`;
+  const resultElement = document.querySelectorAll("main article aside")[1];
+  resultElement.classList.add("success");
+  resultElement.classList.remove("error");
+
+  if (!str) {
+    resultElement.classList.toggle("error");
+    placeholderSearchText.innerText = "Text field cannot be empty";
+  } else if (!res) {
+    resultElement.classList.toggle("error");
+    placeholderSearchText.innerText = `Emoji with name "${str}" could not be found`;
+  }
 }
 
 /**
@@ -166,10 +173,6 @@ searcherForm.addEventListener("submit", (event) => {
   const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
 
   const strToSearch = event.target.search.value;
-  if (!strToSearch) {
-    alert("Search input cannot be empty");
-    return;
-  }
 
   fetch(BASE_URL)
     .then((response) => response.json())
