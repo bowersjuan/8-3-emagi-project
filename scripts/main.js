@@ -79,11 +79,15 @@ function fillCategoriesDropdownMenu(response) {
 
   const categoriesDropdown = document.getElementById("category");
 
-  uniqueCategories.forEach((category) => {
-    const categoryElement = document.createElement("option");
-    categoryElement.innerText = category[0].toUpperCase() + category.slice(1);
-    categoriesDropdown.append(categoryElement);
-  });
+  uniqueCategories
+    .map((category) => {
+      return category[0].toUpperCase() + category.slice(1);
+    })
+    .forEach((category) => {
+      const categoryElement = document.createElement("option");
+      categoryElement.innerText = category;
+      categoriesDropdown.append(categoryElement);
+    });
 }
 
 /**
@@ -95,7 +99,7 @@ function randomizeEmojiFromCategory(response, category) {
   let res = [];
 
   response.forEach((element) => {
-    if (element.categories.includes(category)) {
+    if (element.categories.includes(category.toLowerCase())) {
       res.push(element.symbol);
     }
   });
@@ -105,6 +109,23 @@ function randomizeEmojiFromCategory(response, category) {
   const placeholderRandomizerText =
     document.querySelectorAll("article aside p")[2];
   placeholderRandomizerText.innerText = `${res[randomIndex]}`;
+}
+
+function replaceTextWithEmoji(response, str) {
+  let arrayWithEmojis = [];
+  let formattedStrArray = str.toLowerCase().split(" ");
+
+  for (let element of response) {
+    let res = "";
+    formattedStrArray.forEach((word) => {
+      res = word;
+      if (word.includes(element.name)) {
+        res = element.symbol;
+        arrayWithEmojis.push(res);
+      }
+    });
+  }
+  console.log(arrayWithEmojis);
 }
 
 // Click Events
@@ -173,4 +194,27 @@ randomizerForm.addEventListener("submit", (event) => {
     .catch((e) => console.log(e));
 
   event.target.category.value = "-- Choose a Category --";
+});
+
+// Click Event for Text Replacer
+const replacerForm = document.querySelectorAll("form")[3];
+replacerForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const BASE_URL = "https://emagi-server-8-3.herokuapp.com/api/emojis";
+
+  const textStr = event.target.replace.value;
+  if (textStr === "") {
+    alert("Text must be entered");
+    return;
+  }
+
+  fetch(BASE_URL)
+    .then((response) => response.json())
+    .then((response) => {
+      replaceTextWithEmoji(response, textStr);
+    })
+    .catch((e) => console.log(e));
+
+  event.target.replace.value = "";
 });
